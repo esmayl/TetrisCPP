@@ -3,9 +3,8 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
-
-#include "Playfield.h"
 #include "Block.h"
+#include "Game.h"
 
 class Renderer
 {
@@ -21,8 +20,6 @@ private:
     const int SCREEN_HEIGHT = 480;
     const int cellSize = 10;
     const float edgeMargin = 0.5f;
-
-    Playfield* playField;
     
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -33,4 +30,5 @@ private:
     double secondsPast = 0;
     Uint32 previousTicks;
     float deltaTime;
+    Game* game;
 };

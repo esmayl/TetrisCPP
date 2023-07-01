@@ -32,6 +32,8 @@ void Renderer::InitWindow()
     Renderer::CreateBlock(100,100,80,255);
 
     previousTicks = SDL_GetTicks();
+
+    game = new Game(SCREEN_WIDTH/cellSize, SCREEN_HEIGHT/cellSize);
 }
 
 void Renderer::Render()
@@ -86,27 +88,35 @@ void Renderer::Render()
             {
 
                 // Check if the block has reached the floor
-                if (blocksFalling[i].pos.y < SCREEN_HEIGHT - cellSize) 
+                if (blocksFalling[i].canMove) 
                 {
                     secondsPast = 0;
                     
                     blocksFalling[i].MoveHorizontal(moveDir * cellSize);
                     moveDir = 0;
 
-                    blocksFalling[i].MoveDown(cellSize);
-
-                    // Check again to see if the block has reached the floor after the move, makes sure we only spawn a new block when the block hits the floor
-                    if(blocksFalling[i].pos.y >= SCREEN_HEIGHT - cellSize) 
+                    if(!game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape))
                     {
+                        blocksFalling[i].MoveDown(cellSize);
+                    }
+                    else
+                    {
+                        game->SetGridBlock(blocksFalling[i].pos / cellSize,blocksFalling[i].shape);
+                        std::cout << "Spawning new block" << std::endl;
+
                         Renderer::CreateBlock(100,200,80,255);
+                        
+                        blocksFalling[i].canMove = false;
                     }
                 }
 
             }
+            
             Renderer::DrawBlock(&blocksFalling[i]);
         }
 
         secondsPast += deltaTime;
+        
         // Update the screen
         SDL_RenderPresent(renderer);
     }
@@ -138,9 +148,6 @@ void Renderer::DrawPlayfield()
 
 void Renderer::DrawBlock(int x,int y,int sizeX,int sizeY) 
 {
-    int row = sizeof(playField->grid) / sizeof(playField->grid[0]);
-    int collumns = sizeof(playField->grid[0]) / sizeof(playField->grid[0][0]);
-
     SDL_FRect drawRect;
 
     drawRect.h = sizeX;
@@ -158,7 +165,6 @@ void Renderer::DrawBlock(int x,int y,int sizeX,int sizeY)
 void Renderer::DrawBlock(Block* block)
 {
     int row = sizeof(block->shape) / sizeof(block->shape[0]);
-    int collumns = sizeof(playField->grid[0]) / sizeof(playField->grid[0][0]);
 
     SDL_FRect drawRect;
 

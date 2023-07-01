@@ -11,6 +11,23 @@ enum BlockTypes
 struct Vector2 
 {
 	int x, y;
+
+	Vector2()
+	{
+		x = 0;
+		y = 0;
+	}
+	
+	Vector2(int x, int y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+	
+	Vector2 operator / (int i) const
+	{
+		return Vector2(x/i,y/i);
+	}
 };
 
 class Block
@@ -22,4 +39,5 @@ public:
 	Vector2 pos;
 	int r, g, b, a;
 	Vector2 shape[4];
+	bool canMove = true;
 };

@@ -3,7 +3,6 @@
 #include "Renderer.h"
 
 Renderer renderer;
-Game game;
 
 int main(int argc, char* args[]) 
 {

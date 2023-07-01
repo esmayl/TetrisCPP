@@ -9,6 +9,7 @@ Block::Block(int x, int y,int r,int g,int b,int a, BlockTypes blockType)
 	this->g = g;
 	this->b = b;
 	this->a = a;
+	this->canMove = true;
 
 	switch (blockType)
 	{

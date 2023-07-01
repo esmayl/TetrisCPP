@@ -151,7 +151,6 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Playfield.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -310,7 +309,6 @@
     <ClInclude Include="include\SDL3\SDL_video.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
-    <ClInclude Include="Playfield.h" />
     <ClInclude Include="Renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
