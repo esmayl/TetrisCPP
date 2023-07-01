@@ -103,14 +103,10 @@ void Renderer::Render()
                 }
 
             }
-            else 
-            {
-                secondsPast += deltaTime;
-            }
-
             Renderer::DrawBlock(&blocksFalling[i]);
         }
 
+        secondsPast += deltaTime;
         // Update the screen
         SDL_RenderPresent(renderer);
     }
