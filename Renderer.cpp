@@ -86,7 +86,7 @@ void Renderer::Render()
             {
 
                 // Check if the block has reached the floor
-                if (blocksFalling[i].y < SCREEN_HEIGHT - cellSize) 
+                if (blocksFalling[i].pos.y < SCREEN_HEIGHT - cellSize) 
                 {
                     secondsPast = 0;
                     
@@ -96,7 +96,7 @@ void Renderer::Render()
                     blocksFalling[i].MoveDown(cellSize);
 
                     // Check again to see if the block has reached the floor after the move, makes sure we only spawn a new block when the block hits the floor
-                    if(blocksFalling[i].y >= SCREEN_HEIGHT - cellSize) 
+                    if(blocksFalling[i].pos.y >= SCREEN_HEIGHT - cellSize) 
                     {
                         Renderer::CreateBlock(100,200,80,255);
                     }
@@ -161,7 +161,7 @@ void Renderer::DrawBlock(int x,int y,int sizeX,int sizeY)
 
 void Renderer::DrawBlock(Block* block)
 {
-    int row = sizeof(playField->grid) / sizeof(playField->grid[0]);
+    int row = sizeof(block->shape) / sizeof(block->shape[0]);
     int collumns = sizeof(playField->grid[0]) / sizeof(playField->grid[0][0]);
 
     SDL_FRect drawRect;
@@ -172,15 +172,24 @@ void Renderer::DrawBlock(Block* block)
     // Set the rect color
     SDL_SetRenderDrawColor(renderer, block->r, block->g, block->b, block->a);  // Green
 
-    drawRect.x = block->x;
-    drawRect.y = block->y;
+    for (size_t i = 0; i < row; i++)
+    {
+        drawRect.x = ceil(block->pos.x + block->shape[i].x * cellSize);
+        drawRect.y = ceil(block->pos.y + block->shape[i].y * cellSize);
 
-    SDL_RenderRect(renderer, &drawRect);
+        SDL_RenderRect(renderer, &drawRect);
+    }
+
+
+    //drawRect.x = block->pos.x;
+    //drawRect.y = block->pos.y;
+
+    //SDL_RenderRect(renderer, &drawRect);
 }
 
 
 void Renderer::CreateBlock(int r,int g,int b,int a)
 {
-    Block newBlock(SCREEN_WIDTH / 2, 0,r,g,b,a);
+    Block newBlock(SCREEN_WIDTH / 2, 0,r,g,b,a,static_cast<BlockTypes>(rand() % 4));
     blocksFalling.push_back(newBlock);
 }

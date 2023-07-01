@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <vector>
 #include <chrono>
+#include <math.h>
 
 #include "Playfield.h"
 #include "Block.h"
@@ -32,10 +33,4 @@ private:
     double secondsPast = 0;
     Uint32 previousTicks;
     float deltaTime;
-};
-
-struct Vector2
-{
-    float x;
-    float y;
 };
