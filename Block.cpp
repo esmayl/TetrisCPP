@@ -16,19 +16,19 @@ Block::Block(int x, int y,int r,int g,int b,int a, BlockTypes blockType)
 		case BlockTypes::Square:
 			shape[0] = Vector2();
 			shape[0].x = 0;
-			shape[0].y = -1;
-		
+			shape[0].y = 0;
+
 			shape[1] = Vector2();
 			shape[1].x = 1;
-			shape[1].y = -1;
+			shape[1].y = 0;
 
 			shape[2] = Vector2();
 			shape[2].x = 1;
-			shape[2].y = 0;
+			shape[2].y = -1;
 
 			shape[3] = Vector2();
 			shape[3].x = 0;
-			shape[3].y = 0;
+			shape[3].y = -1;
 			break;
 		case BlockTypes::Line:
 			shape[0] = Vector2();
@@ -66,16 +66,16 @@ Block::Block(int x, int y,int r,int g,int b,int a, BlockTypes blockType)
 			break;
 		case BlockTypes::ZShape:
 			shape[0] = Vector2();
-			shape[0].x = 0;
-			shape[0].y = 0;
+			shape[0].x = -1;
+			shape[0].y = -1;
 					
 			shape[1] = Vector2();
-			shape[1].x = -1;
+			shape[1].x = 0;
 			shape[1].y = -1;
 
 			shape[2] = Vector2();
 			shape[2].x = 0;
-			shape[2].y = -1;
+			shape[2].y = 0;
 
 			shape[3] = Vector2();
 			shape[3].x = 1;
@@ -84,12 +84,8 @@ Block::Block(int x, int y,int r,int g,int b,int a, BlockTypes blockType)
 	}
 }
 
-void Block::MoveDown(int fallStep)
+void Block::Move(int fallStep, int direction)
 {
 	pos.y += fallStep;
-}
-
-void Block::MoveHorizontal(int direction)
-{
 	pos.x += direction;
 }

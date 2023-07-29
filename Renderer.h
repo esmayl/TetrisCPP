@@ -19,7 +19,6 @@ private:
     const int SCREEN_WIDTH = 640;
     const int SCREEN_HEIGHT = 480;
     const int cellSize = 10;
-    const float edgeMargin = 0.5f;
     
     SDL_Window* window;
     SDL_Renderer* renderer;

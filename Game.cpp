@@ -15,20 +15,36 @@ Game::Game(int width,int height)
     }
 }
 
-void Game::SetGridBlock(Vector2 pos,const Vector2* shape)
+void Game::SetGridBlock(Block* block, int cellSize, int direction)
 {
-    int x;
-    int y;
+    int newX;
+    int newY;
     
     for(int i =0;i<4;i++)
     {
-        x = shape[i].x;
-        y = shape[i].y;
+        newX = block->pos.x / cellSize + block->shape[i].x;
+        newY = block->pos.y / cellSize + block->shape[i].y;
+
+        if(newX >= 0 && newY >= 0)
+        {
+            if(newY > 0)
+            {
+                grid[newX-direction][newY-1] = 0;
+            }
+        }
+    }
+
+    for(int i =0;i<4;i++)
+    {
+        newX = block->pos.x / cellSize + block->shape[i].x;
+        newY = block->pos.y / cellSize + block->shape[i].y;
         
-        grid[pos.x+x][pos.y+y] = 1;
+        if(newX >= 0 && newY >= 0)
+        {
+            grid[newX][newY] = 1;
+        }
     }
     
-    // std::cout << "Size: " << grid[0].size() << std::endl;
     // std::string str = "";
     //
     // for (int i = 0;i < grid[0].size();i++)
@@ -49,7 +65,7 @@ void Game::RemoveGridBlock(int x, int y)
 {
 }
 
-bool Game::CheckIfFullRow(int y)
+bool Game::CheckIfFullRow(int y,Vector2* shape)
 {
     return false;
 }

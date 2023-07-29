@@ -28,12 +28,12 @@ void Renderer::InitWindow()
         SDL_Quit();
         return;
     }
-
-    Renderer::CreateBlock(100,100,80,255);
-
+    
     previousTicks = SDL_GetTicks();
 
     game = new Game(SCREEN_WIDTH/cellSize, SCREEN_HEIGHT/cellSize);
+    
+    Renderer::CreateBlock(100,100,80,255);
 }
 
 void Renderer::Render()
@@ -43,12 +43,14 @@ void Renderer::Render()
     SDL_Event event;
     int moveDir = 0;
 
-    while (!quit) 
+    while (!quit)
     {
         Uint32 currentTicks = SDL_GetTicks();
 
         deltaTime = (currentTicks - previousTicks) / 1000.0f;
         previousTicks = currentTicks;
+
+        Vector2 gridSize = Vector2(game->grid.size(),game->grid[0].size());
 
         while (SDL_PollEvent(&event)) 
         {
@@ -78,47 +80,65 @@ void Renderer::Render()
             }
         }
 
-        Renderer::DrawPlayfield();
 
-        for (size_t i = 0; i < blocksFalling.size(); i++)
+        // Only redraw the screen every second
+
+        if (secondsPast >= 1) 
         {
-
-            // Only move the blocks every 1 second, unless the down arrow is pressed above 
-            if (secondsPast >= 1) 
+            secondsPast = 0;
+            
+            for (size_t i = 0; i < blocksFalling.size(); i++)
             {
+                Renderer::DrawPlayfield();
 
                 // Check if the block has reached the floor
-                if (blocksFalling[i].canMove) 
+                if (blocksFalling[i].canMove && !game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape)) 
                 {
-                    secondsPast = 0;
+                    if(blocksFalling[i].pos.x -moveDir * cellSize < background.x + (cellSize * 2))
+                    {
+                        moveDir = 0;
+                    }
                     
-                    blocksFalling[i].MoveHorizontal(moveDir * cellSize);
+                    blocksFalling[i].Move(cellSize, moveDir * cellSize);
+                    game->SetGridBlock(&blocksFalling[i],cellSize, moveDir);
+
                     moveDir = 0;
 
-                    if(!game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape))
+                    if(game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape))
                     {
-                        blocksFalling[i].MoveDown(cellSize);
-                    }
-                    else
-                    {
-                        game->SetGridBlock(blocksFalling[i].pos / cellSize,blocksFalling[i].shape);
-                        std::cout << "Spawning new block" << std::endl;
-
                         Renderer::CreateBlock(100,200,80,255);
-                        
+                    
                         blocksFalling[i].canMove = false;
                     }
-                }
 
+                    // if(game->CheckIfFullRow(blocksFalling[i].pos.y / cellSize,blocksFalling[i].shape))
+                    // {
+                    //     // remove row at blocksFalling[i].pos.y / cellSize
+                    //     blocksFalling.erase(blocksFalling.begin() + i);
+                    //     // move rows above the remove row down
+                    //     // add score
+                    // }
+                }
+        
+                for (size_t i =0;i < gridSize.x;i++)
+                {
+                    for (size_t j=0;j < gridSize.y;j++)
+                    {
+                        if(game->grid[i][j] == 1)
+                        {
+                            Renderer::DrawBlock(i * cellSize, j * cellSize, cellSize, cellSize);
+                        }
+                    }
+                }
             }
             
-            Renderer::DrawBlock(&blocksFalling[i]);
+            // Update the screen
+            SDL_RenderPresent(renderer);
         }
-
+        
         secondsPast += deltaTime;
         
-        // Update the screen
-        SDL_RenderPresent(renderer);
+
     }
 
     // Clean up resources
@@ -150,16 +170,17 @@ void Renderer::DrawBlock(int x,int y,int sizeX,int sizeY)
 {
     SDL_FRect drawRect;
 
-    drawRect.h = sizeX;
-    drawRect.w = sizeY;
+    drawRect.h = cellSize;
+    drawRect.w = cellSize;
 
     // Set the rect color
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green
+    SDL_SetRenderDrawColor(renderer, 255, 0,0, 255);  // Green
 
-    drawRect.x = background.x + x;
-    drawRect.y = background.y + y;
+    drawRect.x = x;
+    drawRect.y = y;
 
     SDL_RenderRect(renderer, &drawRect);
+
 }
 
 void Renderer::DrawBlock(Block* block)
@@ -172,7 +193,7 @@ void Renderer::DrawBlock(Block* block)
     drawRect.w = cellSize;
 
     // Set the rect color
-    SDL_SetRenderDrawColor(renderer, block->r, block->g, block->b, block->a);  // Green
+    SDL_SetRenderDrawColor(renderer, block->r, block->g, block->b, block->a);
 
     for (size_t i = 0; i < row; i++)
     {
@@ -194,4 +215,6 @@ void Renderer::CreateBlock(int r,int g,int b,int a)
 {
     Block newBlock(SCREEN_WIDTH / 2, 0,r,g,b,a,static_cast<BlockTypes>(rand() % 4));
     blocksFalling.push_back(newBlock);
+    
+    game->SetGridBlock(&newBlock,cellSize, 0);
 }
