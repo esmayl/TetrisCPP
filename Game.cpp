@@ -25,7 +25,7 @@ void Game::SetGridBlock(Block* block, int cellSize, int direction)
         newX = block->pos.x / cellSize + block->shape[i].x;
         newY = block->pos.y / cellSize + block->shape[i].y;
 
-        if(newX >= 0 && newY >= 0)
+        if(newX >= 0 && newY >= 0 && newY < grid[0].size() && newX < grid.size())
         {
             if(newY > 0)
             {
@@ -39,7 +39,7 @@ void Game::SetGridBlock(Block* block, int cellSize, int direction)
         newX = block->pos.x / cellSize + block->shape[i].x;
         newY = block->pos.y / cellSize + block->shape[i].y;
         
-        if(newX >= 0 && newY >= 0)
+        if(newX >= 0 && newY >= 0 && newY < grid[0].size() && newX < grid.size())
         {
             grid[newX][newY] = 1;
         }
@@ -67,6 +67,21 @@ void Game::RemoveGridBlock(int x, int y)
 
 bool Game::CheckIfFullRow(int y,Vector2* shape)
 {
+    int colCount = 0;
+    
+    for(int x =0; x < grid.size();x++)
+    {
+        if(grid[x][y] == 1)
+        {
+            colCount++;        
+        }
+    }
+    
+    if(colCount == grid.size())
+    {
+        return true;
+    }
+    
     return false;
 }
 
@@ -93,4 +108,37 @@ bool Game::CheckIfReachedEnd(Vector2 pos,Vector2* shape)
     
 
     return false;
+}
+
+bool Game::IsWithinGrid(Block* block, int move_dir)
+{
+    std::cout << "BlockPos" <<  (block->pos.x/10 + move_dir) << std::endl;
+    int newX,newY;
+    
+    for(int i =0;i<4;i++)
+    {
+        newX = block->pos.x / 10 + block->shape[i].x + move_dir;
+        newY = block->pos.y / 10 + block->shape[i].y;
+        
+        if(newX < 0)
+        {
+            return false;
+        }
+
+        if(newY >= grid[0].size())
+        {
+            return false;
+        }
+
+        if(newX >= grid.size())
+        {
+            return false;
+        }
+    }
+    // if(block->pos.x + move_dir < 0 || block->pos.x/10 + move_dir >= grid.size())
+    // {
+    //     return false;
+    // }
+
+    return true;
 }

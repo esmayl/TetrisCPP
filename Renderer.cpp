@@ -31,7 +31,7 @@ void Renderer::InitWindow()
     
     previousTicks = SDL_GetTicks();
 
-    game = new Game(SCREEN_WIDTH/cellSize, SCREEN_HEIGHT/cellSize);
+    game = new Game(SCREEN_WIDTH/cellSize /3, SCREEN_HEIGHT/cellSize);
     
     Renderer::CreateBlock(100,100,80,255);
 }
@@ -60,6 +60,8 @@ void Renderer::Render()
             }
             else if (event.type == SDL_EVENT_KEY_DOWN)
             {
+                std::cout << "checking key" << std::endl;
+
                 if (event.key.keysym.sym == SDLK_DOWN)
                 {
                     secondsPast = 1;
@@ -94,13 +96,19 @@ void Renderer::Render()
                 // Check if the block has reached the floor
                 if (blocksFalling[i].canMove && !game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape)) 
                 {
-                    if(blocksFalling[i].pos.x -moveDir * cellSize < background.x + (cellSize * 2))
+                    if(game->IsWithinGrid(&blocksFalling[i],moveDir))
                     {
-                        moveDir = 0;
+                        blocksFalling[i].Move(cellSize, moveDir * cellSize);
+                        game->SetGridBlock(&blocksFalling[i],cellSize, moveDir);
                     }
+                    else
+                    {
+                        blocksFalling[i].Move(cellSize, 0);
+                        game->SetGridBlock(&blocksFalling[i],cellSize, 0);
+                    }
+
+                    std::cout << moveDir << std::endl;
                     
-                    blocksFalling[i].Move(cellSize, moveDir * cellSize);
-                    game->SetGridBlock(&blocksFalling[i],cellSize, moveDir);
 
                     moveDir = 0;
 
@@ -111,13 +119,15 @@ void Renderer::Render()
                         blocksFalling[i].canMove = false;
                     }
 
-                    // if(game->CheckIfFullRow(blocksFalling[i].pos.y / cellSize,blocksFalling[i].shape))
-                    // {
-                    //     // remove row at blocksFalling[i].pos.y / cellSize
-                    //     blocksFalling.erase(blocksFalling.begin() + i);
-                    //     // move rows above the remove row down
-                    //     // add score
-                    // }
+                    if(game->CheckIfFullRow(blocksFalling[i].pos.y / cellSize,blocksFalling[i].shape))
+                    {
+                        // remove row at blocksFalling[i].pos.y / cellSize
+                        blocksFalling.erase(blocksFalling.begin() + i);
+                        
+                        std::cout << "Row clear!" << std::endl;
+                        // move rows above the remove row down
+                        // add score
+                    }
                 }
         
                 for (size_t i =0;i < gridSize.x;i++)
@@ -158,10 +168,10 @@ void Renderer::DrawPlayfield()
     // Set the background color
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // Red
 
-    background.x = SCREEN_WIDTH / 3;
+    background.x = BACKGROUND_WIDTH;
     background.y = 0;
     background.h = SCREEN_HEIGHT;
-    background.w = SCREEN_WIDTH / 3;
+    background.w = BACKGROUND_WIDTH;
 
     SDL_RenderRect(renderer, &background);
 }
@@ -176,7 +186,7 @@ void Renderer::DrawBlock(int x,int y,int sizeX,int sizeY)
     // Set the rect color
     SDL_SetRenderDrawColor(renderer, 255, 0,0, 255);  // Green
 
-    drawRect.x = x;
+    drawRect.x = x + BACKGROUND_WIDTH;
     drawRect.y = y;
 
     SDL_RenderRect(renderer, &drawRect);
@@ -213,7 +223,7 @@ void Renderer::DrawBlock(Block* block)
 
 void Renderer::CreateBlock(int r,int g,int b,int a)
 {
-    Block newBlock(SCREEN_WIDTH / 2, 0,r,g,b,a,static_cast<BlockTypes>(rand() % 4));
+    Block newBlock(SCREEN_WIDTH / 2 - BACKGROUND_WIDTH, 0,r,g,b,a,static_cast<BlockTypes>(rand() % 4));
     blocksFalling.push_back(newBlock);
     
     game->SetGridBlock(&newBlock,cellSize, 0);

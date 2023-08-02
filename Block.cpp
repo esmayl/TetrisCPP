@@ -86,6 +86,6 @@ Block::Block(int x, int y,int r,int g,int b,int a, BlockTypes blockType)
 
 void Block::Move(int fallStep, int direction)
 {
-	pos.y += fallStep;
 	pos.x += direction;
+	pos.y += fallStep;
 }

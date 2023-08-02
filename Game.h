@@ -13,6 +13,7 @@ class Game
         void RemoveGridBlock(int x, int y);
         bool CheckIfFullRow(int y,Vector2* shape);
         bool CheckIfReachedEnd(Vector2 pos,Vector2* shape);
-    
+        bool IsWithinGrid(Block* block, int move_dir);
+
         std::vector<std::vector<int>> grid;
 };

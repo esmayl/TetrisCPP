@@ -18,6 +18,7 @@ public:
 private:
     const int SCREEN_WIDTH = 640;
     const int SCREEN_HEIGHT = 480;
+    const int BACKGROUND_WIDTH = SCREEN_WIDTH /3;
     const int cellSize = 10;
     
     SDL_Window* window;
