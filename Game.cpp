@@ -68,17 +68,35 @@ void Game::RemoveGridBlock(int x, int y)
 bool Game::CheckIfFullRow(int y,Vector2* shape)
 {
     int colCount = 0;
-    
+    std::string row = "";
+
     for(int x =0; x < grid.size();x++)
     {
+
         if(grid[x][y] == 1)
         {
             colCount++;        
         }
+        row += "" + std::to_string(grid[x][y]);
     }
+
+    std::cout <<"row "<< y << " " << row << std::endl;
     
     if(colCount == grid.size())
     {
+        for (int x = 0; x < grid.size(); x++)
+        {
+            grid[x][y] = 0;
+        }
+
+        for (int starty = y; starty > 0; starty--)
+        {
+            for (int x = 0; x < grid.size(); x++)
+            {
+                grid[x][starty] = grid[x][starty - 1];
+            }
+        }
+
         return true;
     }
     
@@ -112,7 +130,6 @@ bool Game::CheckIfReachedEnd(Vector2 pos,Vector2* shape)
 
 bool Game::IsWithinGrid(Block* block, int move_dir)
 {
-    std::cout << "BlockPos" <<  (block->pos.x/10 + move_dir) << std::endl;
     int newX,newY;
     
     for(int i =0;i<4;i++)

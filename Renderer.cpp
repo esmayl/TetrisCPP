@@ -60,8 +60,6 @@ void Renderer::Render()
             }
             else if (event.type == SDL_EVENT_KEY_DOWN)
             {
-                std::cout << "checking key" << std::endl;
-
                 if (event.key.keysym.sym == SDLK_DOWN)
                 {
                     secondsPast = 1;
@@ -107,27 +105,26 @@ void Renderer::Render()
                         game->SetGridBlock(&blocksFalling[i],cellSize, 0);
                     }
 
-                    std::cout << moveDir << std::endl;
-                    
-
                     moveDir = 0;
 
                     if(game->CheckIfReachedEnd(blocksFalling[i].pos / cellSize,blocksFalling[i].shape))
                     {
-                        Renderer::CreateBlock(100,200,80,255);
-                    
                         blocksFalling[i].canMove = false;
+
+                        if (game->CheckIfFullRow(blocksFalling[i].pos.y / cellSize, blocksFalling[i].shape))
+                        {
+                            // remove row at blocksFalling[i].pos.y / cellSize
+                            blocksFalling.erase(blocksFalling.begin() + i);
+
+                            std::cout << "Row clear!" << std::endl;
+                            // move rows above the remove row down
+                            // add score
+                        }
+
+                        Renderer::CreateBlock(100, 200, 80, 255);
                     }
 
-                    if(game->CheckIfFullRow(blocksFalling[i].pos.y / cellSize,blocksFalling[i].shape))
-                    {
-                        // remove row at blocksFalling[i].pos.y / cellSize
-                        blocksFalling.erase(blocksFalling.begin() + i);
-                        
-                        std::cout << "Row clear!" << std::endl;
-                        // move rows above the remove row down
-                        // add score
-                    }
+
                 }
         
                 for (size_t i =0;i < gridSize.x;i++)
